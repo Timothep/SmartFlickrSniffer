@@ -44,7 +44,7 @@ def downloadImages(imagesToDownload)
 	imagesToDownload.each do |pic_id|
 		photo_info = flickr.photos.getInfo(:photo_id => pic_id)
 		photo_url = FlickRaw.url_b(photo_info)  
-
+		puts "Downloading image " + pic_id
 		open("Pictures/" + pic_id + ".jpg", "wb") { |file|  
     		file.write(Net::HTTP.get_response(URI.parse(photo_url)).body)  
    		}  
