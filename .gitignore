@@ -54,6 +54,5 @@ _ReSharper*/
 #NuGet
 packages/
 
-
+#Other
 config
-Pictures/*
