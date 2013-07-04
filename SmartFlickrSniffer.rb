@@ -12,8 +12,6 @@ PICTURES_FOLDER = 'Pictures/'
 IMAGES_EXTENSION = '.jpg'
 CONFIG_FILE = 'config'
 
-LAST_KNOWN_IMAGES_FILENAME = 'LastKnownImages.txt'
-
 ####################### METHOD DEFINITIONS ######################################
 
 #Query the [page*500:(page+1)*500] pictures of a photoset
@@ -57,7 +55,7 @@ def readConfig()
 	if not File.file?(CONFIG_FILE)
 		raise "Please create a configuration file first (see readme.md)"
 	end
-	
+
 	buffer = File.open(CONFIG_FILE, 'r').read
 	if buffer.length > 0
 		myArray = JSON.parse(buffer)
