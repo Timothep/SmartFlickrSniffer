@@ -9,7 +9,8 @@ PRIVACY_FILTER = 4 # private photos visible to friends & family
 MEDIA = 'photos'
 PICTURES_COUNT = 20
 LAST_KNOWN_IMAGES_FILENAME = 'LastKnownImages.txt'
-PICTURES_FOLDER = 'Pictures'
+PICTURES_FOLDER = 'Pictures/'
+IMAGES_EXTENSION = '.jpg'
 
 ####################### METHOD DEFINITIONS ######################################
 
@@ -32,7 +33,7 @@ end
 #Delete the images which id are passed in the array
 def deleteImages(imagesToDelete)
 	imagesToDelete.each do |filename|
-		picture_path = 'Pictures/' + filename + '.jpg'
+		picture_path = PICTURES_FOLDER + filename + IMAGES_EXTENSION
 		if File.exists?(picture_path)
 			File.delete(picture_path)
 		end
@@ -45,7 +46,7 @@ def downloadImages(imagesToDownload)
 		photo_info = flickr.photos.getInfo(:photo_id => pic_id)
 		photo_url = FlickRaw.url_b(photo_info)  
 		puts "Downloading image " + pic_id
-		open("Pictures/" + pic_id + ".jpg", "wb") { |file|  
+		open(PICTURES_FOLDER + pic_id + IMAGES_EXTENSION, "wb") { |file|  
     		file.write(Net::HTTP.get_response(URI.parse(photo_url)).body)  
    		}  
    	end
@@ -104,17 +105,17 @@ last20 = getLastPhotosOfSet(PHOTOSET_ID, PICTURES_COUNT)
 #Find the old pictures to erase and the new ones to download
 imagesToDelete = lastKnownImages - last20
 
-puts "Images to delete:"
-imagesToDelete.each do |image|
-	puts image
-	end
+	#puts "Images to delete:"
+	#imagesToDelete.each do |image|
+	#	puts image
+	#	end
 
 imagesToDownload = last20 - lastKnownImages
 
-puts "Images to download:"
-imagesToDownload.each do |image|
-	puts image
-	end
+	#puts "Images to download:"
+	#imagesToDownload.each do |image|
+	#	puts image
+	#	end
 
 #Do it!
 deleteImages(imagesToDelete)
