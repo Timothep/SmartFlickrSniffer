@@ -1,4 +1,6 @@
 require 'flickraw-cached'
+require 'rubygems'
+require 'json'
 
 ####################### CONSTANTS ###############################################
 
@@ -6,6 +8,8 @@ PHOTOSET_ID = 72157632363129361
 PRIVACY_FILTER = 4 # private photos visible to friends & family
 MEDIA = 'photos'
 PICTURES_COUNT = 20
+LAST_KNOWN_IMAGES_FILENAME = 'LastKnownImages.txt'
+PICTURES_FOLDER = 'Pictures'
 
 ####################### METHOD DEFINITIONS ######################################
 
@@ -22,7 +26,37 @@ def getLastPhotosOfSet(photosetid, count)
 		i += 1
 		photoset = getPhotos(photosetid, i)
 	end
-	last20 = photoset.photo[photoset.photo.count - count - 1, count]
+	photoset.photo[photoset.photo.count - count - 1, count].map { |photo| photo.id }
+end
+
+#Delete the images which id are passed in the array
+def deleteImages(imagesToDelete)
+	imagesToDelete.each do |filename|
+		picture_path = 'Pictures/' + filename + '.jpg'
+		if File.exists?(picture_path)
+			File.delete(picture_path)
+		end
+	end
+end
+
+#Download the images which id are passed in the array
+def downloadImages(imagesToDownload)
+	
+end
+
+def readLastKnownImages()
+	buffer = File.open(LAST_KNOWN_IMAGES_FILENAME, 'r').read
+	if buffer.length > 0
+		myArray = JSON.parse(buffer)
+	else
+		myArray = []
+	end
+end
+
+#Update the list with the id which are passed in the array
+def saveLastKnownImages(last20)
+	$stdout = File.open(LAST_KNOWN_IMAGES_FILENAME, 'w')
+	puts last20.to_json
 end
 
 ####################### SCRIPT ##################################################
@@ -54,11 +88,30 @@ flickr.access_secret = "ee8725e2830876c9"
 login = flickr.test.login
 puts "You are now authenticated as #{login.username}"
 
-#Retrieve the last "PICTURES_COUNT" pictures of the set
+#Retrive the ids of the last pictures downloaded
+lastKnownImages = readLastKnownImages()
+
+#Retrieve the last pictures of the set
 last20 = getLastPhotosOfSet(PHOTOSET_ID, PICTURES_COUNT)
 
-puts "The last pictures found are:"
-last20.each do |photo|
-	puts photo.id
-end
+#Find the old pictures to erase and the new ones to download
+imagesToDelete = lastKnownImages - last20
 
+puts "Images to delete:"
+imagesToDelete.each do |image|
+	puts image
+	end
+
+imagesToDownload = last20 - lastKnownImages
+
+puts "Images to download:"
+imagesToDownload.each do |image|
+	puts image
+	end
+
+#Do it!
+deleteImages(imagesToDelete)
+downloadImages(imagesToDownload)
+
+#Update the list
+saveLastKnownImages(last20)
