@@ -54,6 +54,10 @@ def downloadImages(imagesToDownload)
 end
 
 def readConfig()
+	if not File.file?(CONFIG_FILE)
+		raise "Please create a configuration file first (see readme.md)"
+	end
+	
 	buffer = File.open(CONFIG_FILE, 'r').read
 	if buffer.length > 0
 		myArray = JSON.parse(buffer)
